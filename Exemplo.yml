@@ -1,0 +1,173 @@
+openapi: 3.0.1
+info:
+  title: Teste de contrato utilizando OpenAPI
+  version: 0.0.1
+servers:
+  - url: https://exemplo.com/api/v001/dev
+  - url: https://exemplo.com/api/v001/prod
+  - url: https://exemplo.com/api/v001/hom
+paths: 
+  /livro:
+
+    get:
+      tags:
+        - Retorna todos livros
+      summary: Resumo do método GET do endpoint
+      description: Retorna todos objetos do tipo Livro.
+      operationId: getAllBooks
+      responses:
+        "200": 
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Livro'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+
+    post:
+      tags:
+        - Cadastra livro
+      summary: Cadastra um livro
+      description: Cadastra um novo livro
+      operationId: createBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Livro'
+      responses:
+        "201":
+          description: OK
+        "400":
+          description: Bad request
+
+  /livro/{id}:
+    get:
+      tags:
+        - Retorna um livro por id
+      summary: Retorna um livro por id passado pelo path da url.
+      description: Retorna um objeto do tipo Livro por id passado pelo path da url.
+      operationId: getBookById
+      parameters:
+        - name: id
+          in: path
+          description: ID do livro para buscar
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Livro'
+          
+    delete:
+      tags:
+        - Deleta livro
+      summary: Deleta um livro por id
+      description: Deleta um livro por id passado pelo path da url
+      operationId: deleteBookById
+      parameters:
+        - name: id
+          in: path
+          description: ID do livro para deletar 
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: resource deleted successfully
+        "404":
+          description: resource not found
+
+    put:
+      tags:
+        - Atualiza livro
+      summary: Atualiza um livro por id
+      description: Atualiza um livro por id passado pelo path da url e retorna um objeto do tipo Livro com os dados atualizados.
+      operationId: updateBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Livro'
+      parameters:
+        - name: id
+          in: path
+          description: ID do livro para atualizar
+          example: 1
+          required: true
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/Livro'
+      responses:
+        "204":
+          description: resource updated successfully
+        "404":
+          description: resource not found
+
+components:
+  schemas:
+    Autor:
+      type: object
+      required:
+        - nome
+      properties:
+        id:
+          type: integer
+          description: Identificador do objeto.
+          example: 1
+        nome:
+          type: string
+          description: Nome completo do Autor
+          example: Neil Gaiman
+    Livro:
+      type: object
+      required:
+        - titulo
+        - descricao
+        - editora
+        - autor
+        - categoria
+      properties:
+        id:
+          type: integer
+          description: Identificador do objeto.
+          example: 1
+        titulo:
+          type: string
+          description: Titulo completo.
+          example: Edição Definitiva - Sandman - Volume 1
+        descricao:
+          type: string
+          description: Descrição completa.
+          example: Integer fringilla elementum tempus. Nullam tincidunt eros non enim aliquet posuere
+        editora:
+          type: string
+          description: Nome da editora.
+          example: Panini
+        autor:
+          $ref: '#/components/schemas/Autor'
+        categoria:
+          type: string
+          enum:
+            - Drama
+            - História
+            - Romance
+            - Terror
+          description: Enum para categoria.
+          example: Drama
